@@ -1,0 +1,49 @@
+{
+  "name": "seoscoreapi-mcp",
+  "version": "1.4.1",
+  "description": "Model Context Protocol server for SEO Score API \u2014 give Claude, Cursor, Windsurf, and Claude Code direct access to SEO audits, backlink data, and monitoring",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "seoscoreapi-mcp": "index.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "files": [
+    "index.js",
+    "lib.js",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "seo",
+    "audit",
+    "claude",
+    "cursor",
+    "windsurf",
+    "ai-tools",
+    "seo-api",
+    "seoscoreapi"
+  ],
+  "author": "SEO Score API <info@seoscoreapi.com>",
+  "license": "MIT",
+  "homepage": "https://seoscoreapi.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeoScoreAPI/seoscoreapi-mcp.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "mcpName": "io.github.SeoScoreAPI/seoscoreapi-mcp",
+  "bugs": {
+    "url": "https://github.com/SeoScoreAPI/seoscoreapi-mcp/issues"
+  }
+}

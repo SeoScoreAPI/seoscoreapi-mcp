@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.SeoScoreAPI/seoscoreapi-mcp",
+  "description": "SEO audits, AI readability, accessibility, backlinks and score monitoring from SEO Score API.",
+  "repository": {
+    "url": "https://github.com/SeoScoreAPI/seoscoreapi-mcp",
+    "source": "github"
+  },
+  "version": "1.4.1",
+  "websiteUrl": "https://seoscoreapi.com",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "seoscoreapi-mcp",
+      "version": "1.4.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "SEO_SCORE_API_KEY",
+          "description": "SEO Score API key (free at https://seoscoreapi.com, no card)",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
