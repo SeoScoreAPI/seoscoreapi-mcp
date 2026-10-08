@@ -143,7 +143,7 @@ The `backlinks` tool returns an **audit-fed sample**, not a comprehensive backli
 
 ## Source
 
-The MCP server is open source: <https://github.com/avansledright/seoscoreapi.com/tree/main/sdks/mcp>
+The MCP server is open source: <https://github.com/SeoScoreAPI/seoscoreapi-mcp>
 
 ## License
 
