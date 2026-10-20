@@ -1,6 +1,6 @@
 {
   "name": "seoscoreapi-mcp",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Model Context Protocol server for SEO Score API \u2014 give Claude, Cursor, Windsurf, and Claude Code direct access to SEO audits, backlink data, and monitoring",
   "type": "module",
   "main": "index.js",

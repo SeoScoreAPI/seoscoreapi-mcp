@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.4.2 (2026-10-20)
+
+- `create_citation_tracker`, `update_citation_tracker` and `citation_check` now offer
+  every engine the API accepts: `gpt` (one of the API's defaults, previously not
+  selectable) and `nova` were missing. The `engines` field says which are the defaults and
+  that `chatgpt` needs an OpenAI key on the server.
+- `run_citation_tracker`: a run over 45 seconds now comes back as `{run_id, status: "running",
+  poll}` (the API answers 202 instead of timing out); poll `get_citation_run` until it is
+  `completed`.
+- The server reports its version as 1.4.2 (`lib.js` still said 1.4.0 in 1.4.1).
+
 ## 1.4.1 (2026-10-08)
 
 Packaging only, no behaviour change: `mcpName`, `server.json` and `glama.json` for the MCP

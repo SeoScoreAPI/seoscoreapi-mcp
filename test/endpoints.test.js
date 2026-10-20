@@ -189,3 +189,15 @@ test("batch_audit sends cwv only when asked", async () => {
   assert.deepEqual(JSON.parse(f.calls[0].options.body), { urls: ["https://a.com"] });
   assert.deepEqual(JSON.parse(f.calls[1].options.body), { urls: ["https://a.com"], cwv: true });
 });
+
+// The engine list must match the server's citation_engines.ENGINES. Until 1.4.2 it left out
+// "gpt", one of the API's default engines, so an MCP client could not select it.
+test("citation tools offer every engine the API accepts", () => {
+  const SERVER_ENGINES = ["claude", "nova", "gpt", "chatgpt", "gemini", "perplexity"];
+  for (const name of ["create_citation_tracker", "update_citation_tracker", "citation_check"]) {
+    const tool = TOOLS.find((t) => t.name === name);
+    assert.ok(tool, `${name} exists`);
+    const offered = tool.inputSchema.properties.engines.items.enum;
+    assert.deepEqual([...offered].sort(), [...SERVER_ENGINES].sort(), name);
+  }
+});

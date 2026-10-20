@@ -3,7 +3,7 @@
  * index.js wires these to the stdio MCP server; tests import this module directly.
  */
 
-export const VERSION = "1.4.0";
+export const VERSION = "1.4.2";
 export const DEFAULT_BASE = "https://seoscoreapi.com";
 
 // Main host: /deep-audit/usage (its /usage is the per-URL allowance).
@@ -444,7 +444,11 @@ export const TOOLS = [
           properties: { topic: { type: "string" }, audience: { type: "string" } },
         },
         competitors: { type: "array", items: { type: "string" } },
-        engines: { type: "array", items: { type: "string", enum: ["chatgpt", "gemini", "perplexity", "claude"] } },
+        engines: {
+          type: "array",
+          items: { type: "string", enum: ["gpt", "gemini", "perplexity", "claude", "nova", "chatgpt"] },
+          description: "Default: gpt, gemini, perplexity, claude. gpt answers from the model's own knowledge (no browsing); chatgpt is the web-search product and needs an OpenAI key on the server.",
+        },
         samples: { type: "integer", description: "Samples per prompt per engine." },
         cadence: { type: "string", enum: ["daily", "weekly", "monthly", "manual"] },
         webhook_url: { type: "string", description: "https URL." },
@@ -472,7 +476,11 @@ export const TOOLS = [
       properties: {
         tracker_id: { type: "integer" },
         prompts: { type: "array", items: { type: "string" } },
-        engines: { type: "array", items: { type: "string", enum: ["chatgpt", "gemini", "perplexity", "claude"] } },
+        engines: {
+          type: "array",
+          items: { type: "string", enum: ["gpt", "gemini", "perplexity", "claude", "nova", "chatgpt"] },
+          description: "Default: gpt, gemini, perplexity, claude. gpt answers from the model's own knowledge (no browsing); chatgpt is the web-search product and needs an OpenAI key on the server.",
+        },
         competitors: { type: "array", items: { type: "string" } },
         samples: { type: "integer" },
         cadence: { type: "string", enum: ["daily", "weekly", "monthly", "manual"] },
@@ -491,7 +499,9 @@ export const TOOLS = [
     description:
       "Run a citation tracker now. Every prompt x engine x sample counts as one check. A run needs all of its " +
       "checks up front (the month's remaining allowance plus any top-up balance); if that is short the run is " +
-      "refused and nothing is spent. A check whose engine returned an error is not counted.",
+      "refused and nothing is spent. A check whose engine returned an error is not counted. A run that takes " +
+      "over 45 seconds returns {run_id, status: \"running\", poll} instead of the summary; it keeps running, " +
+      "so call get_citation_run with that run_id until status is completed.",
     inputSchema: { type: "object", properties: { tracker_id: { type: "integer" } }, required: ["tracker_id"] },
   },
   {
@@ -519,7 +529,11 @@ export const TOOLS = [
         brand: { type: "string" },
         prompt: { type: "string" },
         domains: { type: "array", items: { type: "string" } },
-        engines: { type: "array", items: { type: "string", enum: ["chatgpt", "gemini", "perplexity", "claude"] } },
+        engines: {
+          type: "array",
+          items: { type: "string", enum: ["gpt", "gemini", "perplexity", "claude", "nova", "chatgpt"] },
+          description: "Default: gpt, gemini, perplexity, claude. gpt answers from the model's own knowledge (no browsing); chatgpt is the web-search product and needs an OpenAI key on the server.",
+        },
         samples: { type: "integer", description: "Default 1." },
         competitors: { type: "array", items: { type: "string" } },
       },
