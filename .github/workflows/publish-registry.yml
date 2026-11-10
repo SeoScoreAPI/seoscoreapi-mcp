@@ -1,0 +1,33 @@
+# Lives in sdks/mcp of the main repo and runs only in the public mirror
+# (SeoScoreAPI/seoscoreapi-mcp), where it sits at the repo root. Publishes
+# server.json to the official MCP registry. GitHub OIDC proves the repo is
+# owned by SeoScoreAPI, which is what the io.github.SeoScoreAPI/ name needs,
+# so no login or token is stored. Run it after npm has the version in server.json.
+name: Publish to MCP registry
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [server.json]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mcp-publisher
+        run: |
+          curl -sSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+      - name: Check npm has this version
+        run: |
+          v=$(jq -r .version server.json)
+          npm view "seoscoreapi-mcp@$v" version
+      - name: Log in with GitHub OIDC
+        run: ./mcp-publisher login github-oidc
+      - name: Publish
+        run: ./mcp-publisher publish

@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.5.0 (2026-11-09)
+
+- Tool definitions moved to `tools.json`, which the hosted server at
+  `https://seoscoreapi.com/mcp` serves too, so both list identical tools.
+- Every tool now has a `title`, `annotations` (`readOnlyHint`, `destructiveHint`,
+  `idempotentHint`, `openWorldHint`) and an `outputSchema`; every input property has a
+  description (with enums, ranges and examples where they apply), and unknown arguments
+  are refused by the schema (`additionalProperties: false`).
+- Results carry `structuredContent` (the JSON object) next to the text. `report_url`
+  returns `{url}` and `llms_txt` `{llms_txt}` there; the text is unchanged.
+- The server sends `instructions` (where to start, how to get a free key) and a title.
+- `server.json` lists the hosted endpoint under `remotes` (Streamable HTTP; API key as
+  `Authorization: Bearer` or OAuth sign-in).
+- `gemini-extension.json` + `GEMINI.md` make the public mirror a Gemini CLI extension
+  (`gemini extensions install https://github.com/SeoScoreAPI/seoscoreapi-mcp`): it points
+  at the hosted server (`httpUrl`), and `/mcp auth seoscoreapi` signs in. No key in a file.
+
 ## 1.4.2 (2026-10-20)
 
 - `create_citation_tracker`, `update_citation_tracker` and `citation_check` now offer

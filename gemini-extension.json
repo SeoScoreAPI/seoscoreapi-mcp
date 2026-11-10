@@ -1,0 +1,11 @@
+{
+  "name": "seoscoreapi",
+  "version": "1.5.0",
+  "description": "SEO, GEO (AI search visibility) and ADA/WCAG accessibility audits, AI citation tracking and site crawls from SEO Score API. Sign in on first use; free key, no card.",
+  "mcpServers": {
+    "seoscoreapi": {
+      "httpUrl": "https://seoscoreapi.com/mcp"
+    }
+  },
+  "contextFileName": "GEMINI.md"
+}

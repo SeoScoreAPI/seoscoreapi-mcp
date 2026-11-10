@@ -1,0 +1,1997 @@
+[
+  {
+    "name": "audit",
+    "title": "SEO Audit (score + fixes)",
+    "description": "Run a full SEO audit on a URL. Returns score (0-100), letter grade, category breakdowns (meta, technical, social, performance, accessibility), AI readability score, SXO/AEO/AIO scores (paid plans), and a prioritized list of fixes. Usually returns in seconds. Free tier: 20 audits a month. Core Web Vitals (LCP, INP, CLS) are not measured unless include_core_web_vitals is true.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "The URL to audit. Must include the protocol (https://...).",
+          "format": "uri",
+          "maxLength": 2048,
+          "examples": [
+            "https://example.com"
+          ]
+        },
+        "include_core_web_vitals": {
+          "type": "boolean",
+          "default": false,
+          "description": "Also measure Core Web Vitals (LCP, INP, CLS, FCP, TTFB) with Google PageSpeed Insights and return them under core_web_vitals. Adds about 10 seconds the first time a URL is measured (cached 24 hours). Needs an API key. Leave off unless the user asks about page speed or Core Web Vitals."
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "description": "Overall SEO score 0-100."
+        },
+        "grade": {
+          "description": "Letter grade A+ to F."
+        },
+        "categories": {
+          "description": "Per-category scores (meta, technical, social, performance, accessibility)."
+        },
+        "priorities": {
+          "description": "Prioritized fixes, most important first. Each has the issue, a plain_english explanation and who_fixes_it."
+        },
+        "ai_readability": {
+          "description": "AI readability score and findings."
+        },
+        "core_web_vitals": {
+          "description": "Present when include_core_web_vitals is true."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "SEO Audit (score + fixes)",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "batch_audit",
+    "title": "Batch SEO Audit",
+    "description": "Audit multiple URLs in one call. Requires Starter plan ($5/mo) or higher. Returns one audit object per URL.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "URLs to audit (1–10).",
+          "minItems": 1,
+          "maxItems": 10
+        },
+        "include_core_web_vitals": {
+          "type": "boolean",
+          "default": false,
+          "description": "Also measure Core Web Vitals for every URL. Slower: the batch can take a few minutes."
+        }
+      },
+      "required": [
+        "urls"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "description": "One audit object per URL."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Batch SEO Audit",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "usage",
+    "title": "Plan Usage & Quota",
+    "description": "Get the current plan, monthly usage, and remaining quota for the API key in use.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "tier": {
+          "description": "Plan key: free, starter, basic, pro or ultra."
+        },
+        "limits": {
+          "description": "The plan's limits."
+        },
+        "ada_remaining": {
+          "description": "ADA audits left this month."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Plan Usage & Quota",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "report_url",
+    "title": "Shareable Report Link",
+    "description": "Return the public, shareable HTML report URL for a domain (https://seoscoreapi.com/report/{domain}). Useful for sending results to a client without exposing an API key. Makes no request and uses no quota.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Bare domain without protocol or path, e.g. example.com.",
+          "maxLength": 253,
+          "examples": [
+            "example.com"
+          ]
+        }
+      },
+      "required": [
+        "domain"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "Public shareable report URL."
+        }
+      },
+      "additionalProperties": true,
+      "required": [
+        "url"
+      ]
+    },
+    "annotations": {
+      "title": "Shareable Report Link",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "add_monitor",
+    "title": "Add Score Monitor",
+    "description": "Add a URL to score monitoring: it is re-audited on a schedule (daily or weekly) and the account owner is emailed when the score drops. Each plan allows a set number of monitors; the error says when the limit is reached.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "Full page URL including the protocol, e.g. https://example.com/pricing.",
+          "examples": [
+            "https://example.com"
+          ]
+        },
+        "frequency": {
+          "type": "string",
+          "enum": [
+            "daily",
+            "weekly"
+          ],
+          "default": "daily",
+          "description": "How often to re-audit."
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Add Score Monitor",
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "list_monitors",
+    "title": "List Score Monitors",
+    "description": "List all URLs currently under score monitoring for the active API key.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "monitors": {
+          "description": "Monitored URLs with frequency and last score."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "List Score Monitors",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "history",
+    "title": "Score History for a URL",
+    "description": "Fetch the audit-score history for a URL. Returns a time-series of past scores so you can see trends. Requires Starter plan ($5/mo) or higher.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "Full page URL including the protocol, e.g. https://example.com/pricing.",
+          "examples": [
+            "https://example.com"
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "default": 100,
+          "description": "Max points to return (1-1000).",
+          "minimum": 1,
+          "maximum": 1000
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "history": {
+          "description": "Past audits, oldest first: timestamp, score, grade."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Score History for a URL",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "history_domains",
+    "title": "Audited Domains Overview",
+    "description": "List every domain audited by this API key with the latest score and 30-day trend. Starter+.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "domains": {
+          "description": "Each domain with latest_score, latest_grade and 30-day trend."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Audited Domains Overview",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "backlinks",
+    "title": "Backlink Sample",
+    "description": "Look up observed backlinks for a domain. SEO Score API maintains an audit-fed backlink graph: every audit contributes the external links found on the audited page. The dataset is a sample (NOT a comprehensive backlink index like Ahrefs) and the response always includes a data_caveat. Coverage grows over time. Requires Basic plan ($15/mo) or higher.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Bare domain without protocol or path, e.g. example.com.",
+          "maxLength": 253,
+          "examples": [
+            "example.com"
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "default": 50,
+          "description": "Max sample rows to return (1-500)",
+          "minimum": 1,
+          "maximum": 500
+        }
+      },
+      "required": [
+        "domain"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "data_caveat": {
+          "description": "What the sample does and does not cover."
+        },
+        "backlinks": {
+          "description": "Sample rows."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Backlink Sample",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "deep_audit",
+    "title": "Deep Audit (wait for result)",
+    "description": "Run a Deep Audit — a thorough, AI-assisted SEO audit that scores a URL across 9 dimensions (technical, crawlability, content/entity, Core Web Vitals, technical SEO, structured data, security, media, off-site): thousands of catalog checks plus up to 150 AI checks. Runs asynchronously server-side; this tool waits for the result (about 90 seconds once it starts, longer if queued). Included on Pro ($39/mo, 20/month) and Ultra ($99/mo, 100/month); other keys spend a purchased Deep Audit credit. For long waits use start_deep_audit + get_deep_audit instead.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL to audit. Must include the protocol (https://...).",
+          "format": "uri",
+          "maxLength": 2048,
+          "examples": [
+            "https://example.com"
+          ]
+        },
+        "business_type": {
+          "type": "string",
+          "description": "Optional. Tunes which checks apply; worked out from the page when omitted.",
+          "enum": [
+            "saas",
+            "local_service",
+            "ecommerce",
+            "storefront",
+            "blog",
+            "publisher"
+          ]
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "default": 600,
+          "description": "How long to wait before giving up (job keeps running).",
+          "minimum": 10,
+          "maximum": 3600
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "description": "Overall Deep Audit score."
+        },
+        "sections": {
+          "description": "Per-section scores and findings."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Deep Audit (wait for result)",
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "start_deep_audit",
+    "title": "Start Deep Audit",
+    "description": "Queue a Deep Audit and return immediately with a job_id. Poll it with get_deep_audit. Same plans as deep_audit.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL to audit. Must include the protocol (https://...).",
+          "format": "uri",
+          "maxLength": 2048,
+          "examples": [
+            "https://example.com"
+          ]
+        },
+        "business_type": {
+          "type": "string",
+          "description": "Optional. Tunes which checks apply; worked out from the page when omitted.",
+          "enum": [
+            "saas",
+            "local_service",
+            "ecommerce",
+            "storefront",
+            "blog",
+            "publisher"
+          ]
+        },
+        "webhook_url": {
+          "type": "string",
+          "description": "Optional public URL POSTed once when the job completes.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "job_id": {
+          "description": "Job id to poll."
+        },
+        "status": {
+          "description": "queued, running, completed or failed."
+        },
+        "poll": {
+          "description": "Path to poll for status."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Start Deep Audit",
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "get_deep_audit",
+    "title": "Deep Audit Status",
+    "description": "Get a Deep Audit job's status: queued (queue_position, eta_seconds), running (progress 0-100, stage), completed (result) or failed (error). Poll every 5-10 seconds.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "job_id": {
+          "type": "string",
+          "description": "The job_id from start_deep_audit.",
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "job_id"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "queued, running, completed or failed."
+        },
+        "progress": {
+          "description": "0-100."
+        },
+        "result": {
+          "description": "The audit, when completed."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Deep Audit Status",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "deep_audit_usage",
+    "title": "Deep Audit Allowance",
+    "description": "Deep Audits used and remaining this calendar month for the API key in use.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "site_audit": {
+          "description": "{used, remaining} this calendar month."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Deep Audit Allowance",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "remove_monitor",
+    "title": "Remove Score Monitor",
+    "description": "Stop score monitoring for a URL. Its past history is kept.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "Full page URL including the protocol, e.g. https://example.com/pricing.",
+          "examples": [
+            "https://example.com"
+          ]
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Remove Score Monitor",
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "compare",
+    "title": "Compare URLs",
+    "description": "Compare 2-5 URLs side by side with a structured diff: each URL's score and category breakdown plus who is ahead and by how much, per category and per URL pair. Requires Basic plan ($15/mo) or higher.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "urls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          },
+          "minItems": 2,
+          "maxItems": 5,
+          "description": "2 to 5 URLs."
+        }
+      },
+      "required": [
+        "urls"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "description": "Each URL's score and categories."
+        },
+        "diff": {
+          "description": "Who leads, per category and per pair."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Compare URLs",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "competitive_audit",
+    "title": "Competitive Keyword Audit",
+    "description": "Head-to-head SEO comparison of your page against a competitor's page with keyword-relevance scoring. Requires Pro plan ($39/mo) or higher.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "Your page's full URL including the protocol, e.g. https://example.com/pricing.",
+          "format": "uri",
+          "maxLength": 2048,
+          "examples": [
+            "https://example.com"
+          ]
+        },
+        "competitor_url": {
+          "type": "string",
+          "description": "The competitor page's full URL including the protocol, e.g. https://competitor.com/pricing.",
+          "format": "uri",
+          "maxLength": 2048,
+          "examples": [
+            "https://competitor.com"
+          ]
+        },
+        "keyword": {
+          "type": "string",
+          "description": "Target keyword (max 200 characters).",
+          "maxLength": 200,
+          "examples": [
+            "seo audit api"
+          ]
+        }
+      },
+      "required": [
+        "url",
+        "competitor_url",
+        "keyword"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "you": {
+          "description": "Your page's audit."
+        },
+        "competitor": {
+          "description": "The competitor page's audit."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Competitive Keyword Audit",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "accessibility_audit",
+    "title": "ADA / WCAG Accessibility Audit",
+    "description": "Run an ADA / WCAG 2.1 AA accessibility audit (axe-core). Paid plans only. Returns the compliance score and grade, lawsuit risk (high/medium/low/minimal), category breakdowns, violations (WCAG 2.1 AA failures with affected elements and a plain-English fix), best_practices (not WCAG requirements; they never lower the score), needs_review and priorities. ADA audits have their own monthly allowance, separate from the audit quota (the usage tool reports ada_remaining). Each key may run 2 at a time; a 429 is not counted.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "The URL to audit. Must include the protocol (https://...).",
+          "format": "uri",
+          "maxLength": 2048,
+          "examples": [
+            "https://example.com"
+          ]
+        },
+        "include_trackers": {
+          "type": "boolean",
+          "description": "Also add the tracker and pixel inventory to the report."
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "lawsuit_risk": {
+          "description": "high, medium, low or minimal."
+        },
+        "violations": {
+          "description": "WCAG 2.1 AA failures with affected elements and a fix."
+        },
+        "priorities": {
+          "description": "Prioritized fixes, most important first. Each has the issue, a plain_english explanation and who_fixes_it."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "ADA / WCAG Accessibility Audit",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ai_readability",
+    "title": "AI Readability Score",
+    "description": "Score how easily AI assistants and LLM search (ChatGPT, Perplexity, Google AI Overviews) can read, quote and cite a page: structure, answer-first content, entities and machine-readable data, with recommendations. Counts as one audit.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "Full page URL including the protocol, e.g. https://example.com/pricing.",
+          "examples": [
+            "https://example.com"
+          ]
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "AI Readability Score",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "trackers",
+    "title": "Tracker & Pixel Inventory",
+    "description": "List the third-party trackers and pixels a page loads (analytics, advertising, session replay, chat, marketing automation, A/B testing, monitoring), including pixels a tag manager injects. Loads the page in a real browser with no interaction; it does not determine whether a tracker waited for consent, and it is not legal advice. Counts as one audit; a page that can't be loaded is not counted.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "Full page URL including the protocol, e.g. https://example.com/pricing.",
+          "examples": [
+            "https://example.com"
+          ]
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "trackers": {
+          "description": "Detected vendors with category and whether a tag manager injected them."
+        },
+        "summary": {
+          "description": "Counts and the consent manager, if any."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Tracker & Pixel Inventory",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "conversion",
+    "title": "Conversion Score",
+    "description": "Score how well a page turns a visitor into a lead or a sale: headline, call to action, trust, forms and objections, each 0-100, with a prioritized fix list. It does not measure the actual conversion rate. Counts as one audit. Free keys get the scores and the first two priorities; paid plans get the full list.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "Full page URL including the protocol, e.g. https://example.com/pricing.",
+          "examples": [
+            "https://example.com"
+          ]
+        },
+        "page_type": {
+          "type": "string",
+          "enum": [
+            "local_service",
+            "ecommerce",
+            "saas",
+            "general"
+          ],
+          "description": "Detected from the page when omitted."
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "categories": {
+          "description": "headline, cta, trust, forms, objections: 0-100 each."
+        },
+        "priorities": {
+          "description": "Prioritized fixes, most important first. Each has the issue, a plain_english explanation and who_fixes_it."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Conversion Score",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "quick_wins",
+    "title": "Search Console Quick Wins",
+    "description": "Find the page-2 quick wins in the user's own Google Search Console data: queries ranking 11-20 worth working on first, each with an opportunity score and an estimate of the extra clicks from moving onto page 1. The API does not connect to Search Console: pass the exported rows or the CSV export text. Nothing is stored. The click numbers are estimates. Works on every plan; counts as one audit. Up to 1 MB per request.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Rows like {query, page, clicks, impressions, position}. `page` is optional."
+        },
+        "csv": {
+          "type": "string",
+          "description": "The Performance export as text, with a header row. Use instead of rows.",
+          "maxLength": 1048576
+        },
+        "min_impressions": {
+          "type": "integer",
+          "description": "Skip queries with fewer impressions. Default 50.",
+          "minimum": 0
+        },
+        "target_position": {
+          "type": "integer",
+          "description": "1-10, default 5.",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Default 25, max 200.",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "exclude_terms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Words to leave out, such as the brand name."
+        }
+      },
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "quick_wins": {
+          "description": "Queries ranking 11-20 with opportunity score and estimated extra clicks."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Search Console Quick Wins",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "llms_txt",
+    "title": "Generate llms.txt",
+    "description": "Generate an llms.txt file for a domain and return its text, ready to save at /llms.txt. Basic plan ($15/mo) and higher get the curated version with per-page descriptions; other keys (or no key) get the basic version.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Bare domain without protocol or path, e.g. example.com.",
+          "maxLength": 253,
+          "examples": [
+            "example.com"
+          ]
+        }
+      },
+      "required": [
+        "domain"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "llms_txt": {
+          "type": "string",
+          "description": "The generated llms.txt file text."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Generate llms.txt",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "geo_audit",
+    "title": "GEO Audit (AI search visibility)",
+    "description": "Run a GEO (Generative Engine Optimization) audit: 26 checks measuring how visible a page is to LLMs. Requires Basic plan ($15/mo) or higher; uses the plan's monthly GEO allowance.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "Full page URL including the protocol, e.g. https://example.com/pricing.",
+          "examples": [
+            "https://example.com"
+          ]
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "priorities": {
+          "description": "Prioritized fixes, most important first. Each has the issue, a plain_english explanation and who_fixes_it."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "GEO Audit (AI search visibility)",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "geo_brand_probe",
+    "title": "AI Brand Mention Probe",
+    "description": "Probe LLMs to measure how often a brand is mentioned in AI responses. Requires Basic plan ($15/mo) or higher; uses the plan's monthly GEO allowance. Can take a while.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "brand": {
+          "type": "string",
+          "description": "Brand name as people say it, e.g. Acme.",
+          "examples": [
+            "Acme"
+          ]
+        },
+        "domain": {
+          "type": "string",
+          "description": "Bare domain without protocol or path, e.g. example.com.",
+          "maxLength": 253,
+          "examples": [
+            "example.com"
+          ]
+        },
+        "prompts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Questions to ask, e.g. \"What are the best X?\""
+        },
+        "models": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional engines to ask, e.g. [\"claude\", \"nova\"]. Default: the server's set."
+        },
+        "runs_per_prompt": {
+          "type": "integer",
+          "description": "Default 3.",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "brand",
+        "domain",
+        "prompts"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "mention_rate": {
+          "description": "Share of answers that mention the brand."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "AI Brand Mention Probe",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "add_geo_monitor",
+    "title": "Add GEO Monitor",
+    "description": "Create a GEO monitor for a URL. Requires Basic plan or higher (the Basic plan runs weekly).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "Full page URL including the protocol, e.g. https://example.com/pricing.",
+          "examples": [
+            "https://example.com"
+          ]
+        },
+        "frequency": {
+          "type": "string",
+          "enum": [
+            "daily",
+            "weekly"
+          ],
+          "default": "weekly",
+          "description": "How often to re-run (Basic runs weekly)."
+        },
+        "alert_threshold": {
+          "type": "integer",
+          "default": -5,
+          "description": "Alert when the score moves by this many points or more (negative = drop)."
+        },
+        "webhook_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Optional https URL to POST alerts to."
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Add GEO Monitor",
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "list_geo_monitors",
+    "title": "List GEO Monitors",
+    "description": "List the active GEO monitors for the API key in use.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "List GEO Monitors",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "geo_monitor_history",
+    "title": "GEO Monitor History",
+    "description": "Score history for one GEO monitor, newest first, paginated.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "monitor_id": {
+          "type": "integer",
+          "description": "The monitor's id from list_geo_monitors."
+        },
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "description": "Page number, from 1.",
+          "minimum": 1
+        },
+        "per_page": {
+          "type": "integer",
+          "default": 20,
+          "description": "1-100.",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "monitor_id"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "GEO Monitor History",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "remove_geo_monitor",
+    "title": "Remove GEO Monitor",
+    "description": "Stop a GEO monitor by its URL. Past history is kept.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "Full page URL including the protocol, e.g. https://example.com/pricing.",
+          "examples": [
+            "https://example.com"
+          ]
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Remove GEO Monitor",
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "crawl_site",
+    "title": "Site Crawl (wait for result)",
+    "description": "Crawl one site and wait for the result: follows same-site links plus the sitemap and reports broken pages, redirects, duplicate titles and headings, pages missing a title or heading, orphan pages and slow pages. Pro: 25 pages per crawl, 20 crawls a month. Ultra: 100 pages, 100 crawls a month. Any other plan: one Deep Audit credit covers a 25-page crawl. A failed crawl is not counted. For long waits use start_crawl + get_crawl.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "Full page URL including the protocol, e.g. https://example.com/pricing.",
+          "format": "uri",
+          "maxLength": 2048,
+          "examples": [
+            "https://example.com"
+          ]
+        },
+        "max_pages": {
+          "type": "integer",
+          "description": "Fewer pages than the plan's cap (1-100).",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "default": 600,
+          "description": "How long to wait before giving up (the crawl keeps running).",
+          "minimum": 10,
+          "maximum": 3600
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "site_map": {
+          "description": "Shareable site map link."
+        },
+        "result": {
+          "description": "summary, issues, pages, links."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Site Crawl (wait for result)",
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "start_crawl",
+    "title": "Start Site Crawl",
+    "description": "Start a site crawl and return immediately with a job_id and a shareable site_map link. Poll it with get_crawl. Same plans as crawl_site.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "Full page URL including the protocol, e.g. https://example.com/pricing.",
+          "examples": [
+            "https://example.com"
+          ]
+        },
+        "max_pages": {
+          "type": "integer",
+          "description": "Fewer pages than the plan's cap (1-100).",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Start Site Crawl",
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "get_crawl",
+    "title": "Site Crawl Status",
+    "description": "Get a site crawl's status: queued, running (pages_done counts up), completed (result: summary, issues, pages, links) or failed (error). Only the key that started a crawl can read it.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "job_id": {
+          "type": "string",
+          "description": "The job_id from start_crawl.",
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "job_id"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Site Crawl Status",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "citation_starter_prompts",
+    "title": "AI Citation Starter Prompts",
+    "description": "Build a starter set of prompts to track for AI citations, from a topic plus optional brand, competitors and audience. Fixed templates, not a model: no AI check is spent. Works on every plan and is not metered. Returns `prompts`, ready to pass to create_citation_tracker.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "topic": {
+          "type": "string",
+          "description": "What you sell, as a buyer would type it, singular (e.g. \"SEO audit API\").",
+          "examples": [
+            "SEO audit API"
+          ]
+        },
+        "brand": {
+          "type": "string",
+          "description": "Your brand name (optional)."
+        },
+        "competitors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Up to 5 competitor names."
+        },
+        "audience": {
+          "type": "string",
+          "description": "Who buys it, plural (e.g. \"marketing agencies\")."
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Up to 6 features buyers ask about."
+        },
+        "use_cases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Up to 6 jobs it is bought for."
+        },
+        "per_category": {
+          "type": "integer",
+          "description": "Prompts per category, 1-10 (default 2 = 12 prompts).",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Cut the list to this many (1-60).",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "required": [
+        "topic"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "prompts": {
+          "description": "Prompts ready for create_citation_tracker."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "AI Citation Starter Prompts",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "citation_suggest_prompts",
+    "title": "Suggest AI Citation Prompts",
+    "description": "Suggest AI-citation prompts to track, read off what a site says it does (fetches the site's pages). Use the result with create_citation_tracker.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "maxLength": 253,
+          "description": "Bare domain without protocol or path, e.g. example.com.",
+          "examples": [
+            "example.com"
+          ]
+        }
+      },
+      "required": [
+        "domain"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Suggest AI Citation Prompts",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "create_citation_tracker",
+    "title": "Create AI Citation Tracker",
+    "description": "Track a brand's visibility in AI answers (ChatGPT, Gemini, Perplexity, Claude): mention rate, citation rate, share of voice and position over time. Requires Starter ($5/mo) or higher. Monthly allowance (checks / tracked prompts): Starter 150 / 15, Basic 500 / 30, Pro 1,500 / 75, Ultra 4,000 / 200. A check is one prompt on one engine, sampled once. With no prompts, pass `starter` and a starter set is generated to fit the plan.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "brand": {
+          "type": "string",
+          "description": "Brand to track, e.g. Acme.",
+          "examples": [
+            "Acme"
+          ]
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The brand's domains (e.g. [\"acme.com\"])."
+        },
+        "prompts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The questions buyers type."
+        },
+        "starter": {
+          "type": "object",
+          "description": "Use instead of prompts: {topic, audience?}.",
+          "properties": {
+            "topic": {
+              "type": "string"
+            },
+            "audience": {
+              "type": "string"
+            }
+          }
+        },
+        "competitors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Competitor brand names to compare share of voice against."
+        },
+        "engines": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "gpt",
+              "gemini",
+              "perplexity",
+              "claude",
+              "nova",
+              "chatgpt"
+            ]
+          },
+          "description": "Default: gpt, gemini, perplexity, claude. gpt answers from the model's own knowledge (no browsing); chatgpt is the web-search product and needs an OpenAI key on the server."
+        },
+        "samples": {
+          "type": "integer",
+          "description": "Samples per prompt per engine (each is one check).",
+          "minimum": 1
+        },
+        "cadence": {
+          "type": "string",
+          "enum": [
+            "daily",
+            "weekly",
+            "monthly",
+            "manual"
+          ],
+          "description": "How often it runs automatically; manual = only when run_citation_tracker is called."
+        },
+        "webhook_url": {
+          "type": "string",
+          "description": "https URL.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "brand"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Create AI Citation Tracker",
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "list_citation_trackers",
+    "title": "List AI Citation Trackers",
+    "description": "List the key's citation trackers plus `usage`: the month's checks (limit, used, remaining), the top-up balance and checks_available (what a run can spend now).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "usage": {
+          "description": "Month's checks (limit, used, remaining), top-up balance, checks_available."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "List AI Citation Trackers",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_citation_tracker",
+    "title": "Get AI Citation Tracker",
+    "description": "Read one citation tracker: brand, domains, prompts, engines, competitors, cadence and webhook.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "tracker_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The tracker's id from list_citation_trackers or create_citation_tracker.",
+          "examples": [
+            12
+          ]
+        }
+      },
+      "required": [
+        "tracker_id"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Get AI Citation Tracker",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "update_citation_tracker",
+    "title": "Update AI Citation Tracker",
+    "description": "Edit a citation tracker's prompts, engines, competitors, samples, cadence or webhook. Only the fields passed change.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "tracker_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The tracker's id from list_citation_trackers or create_citation_tracker.",
+          "examples": [
+            12
+          ]
+        },
+        "prompts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Replaces the tracked prompts."
+        },
+        "engines": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "gpt",
+              "gemini",
+              "perplexity",
+              "claude",
+              "nova",
+              "chatgpt"
+            ]
+          },
+          "description": "Default: gpt, gemini, perplexity, claude. gpt answers from the model's own knowledge (no browsing); chatgpt is the web-search product and needs an OpenAI key on the server."
+        },
+        "competitors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Replaces the competitor list."
+        },
+        "samples": {
+          "type": "integer",
+          "description": "Samples per prompt per engine.",
+          "minimum": 1
+        },
+        "cadence": {
+          "type": "string",
+          "enum": [
+            "daily",
+            "weekly",
+            "monthly",
+            "manual"
+          ],
+          "description": "daily, weekly, monthly or manual."
+        },
+        "webhook_url": {
+          "type": "string",
+          "description": "https URL POSTed after each run."
+        }
+      },
+      "required": [
+        "tracker_id"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Update AI Citation Tracker",
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "delete_citation_tracker",
+    "title": "Delete AI Citation Tracker",
+    "description": "Stop tracking a brand. Run history is kept until its retention expires.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "tracker_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The tracker's id from list_citation_trackers or create_citation_tracker.",
+          "examples": [
+            12
+          ]
+        }
+      },
+      "required": [
+        "tracker_id"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Delete AI Citation Tracker",
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "run_citation_tracker",
+    "title": "Run AI Citation Tracker",
+    "description": "Run a citation tracker now. Every prompt x engine x sample counts as one check. A run needs all of its checks up front (the month's remaining allowance plus any top-up balance); if that is short the run is refused and nothing is spent. A check whose engine returned an error is not counted. A run that takes over 45 seconds returns {run_id, status: \"running\", poll} instead of the summary; it keeps running, so call get_citation_run with that run_id until status is completed.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "tracker_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The tracker's id from list_citation_trackers or create_citation_tracker.",
+          "examples": [
+            12
+          ]
+        }
+      },
+      "required": [
+        "tracker_id"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Run AI Citation Tracker",
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "get_citation_run",
+    "title": "AI Citation Run Results",
+    "description": "A citation run's status plus every per-prompt, per-engine result (mentioned, cited, position, snippet).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "run_id": {
+          "type": "integer",
+          "description": "The run_id from run_citation_tracker.",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "run_id"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "AI Citation Run Results",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "citation_tracker_history",
+    "title": "AI Citation Trend",
+    "description": "Timeseries of mention rate, citation rate, share of voice and average position for a citation tracker.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "tracker_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The tracker's id from list_citation_trackers or create_citation_tracker.",
+          "examples": [
+            12
+          ]
+        },
+        "days": {
+          "type": "integer",
+          "default": 90,
+          "description": "1-365.",
+          "minimum": 1,
+          "maximum": 365
+        }
+      },
+      "required": [
+        "tracker_id"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "AI Citation Trend",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "citation_check",
+    "title": "One-off AI Citation Check",
+    "description": "One-off AI citation check for a brand and one prompt: no tracker, metered per check (one check per engine per sample). Paid plans only (Starter and up).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "brand": {
+          "type": "string",
+          "description": "Brand to look for in the answers, e.g. Acme."
+        },
+        "prompt": {
+          "type": "string",
+          "description": "The question a buyer would ask an AI assistant.",
+          "examples": [
+            "What is the best SEO audit API?"
+          ],
+          "maxLength": 500
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The brand's domains, to count citations of them."
+        },
+        "engines": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "gpt",
+              "gemini",
+              "perplexity",
+              "claude",
+              "nova",
+              "chatgpt"
+            ]
+          },
+          "description": "Default: gpt, gemini, perplexity, claude. gpt answers from the model's own knowledge (no browsing); chatgpt is the web-search product and needs an OpenAI key on the server."
+        },
+        "samples": {
+          "type": "integer",
+          "description": "Default 1."
+        },
+        "competitors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Competitor names to compare against."
+        }
+      },
+      "required": [
+        "brand",
+        "prompt"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "One-off AI Citation Check",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "citation_topups",
+    "title": "Citation Top-up Packs",
+    "description": "Top-up packs for AI citation checks (`packs` is the live list with prices) and this account's balance. Top-up checks are spent only after the plan's monthly allowance, do not reset on the 1st, and expire 12 months after purchase. `can_buy` is false on the free tier.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "packs": {
+          "description": "Live packs with key and price."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Citation Top-up Packs",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "citation_topup_checkout",
+    "title": "Citation Top-up Checkout Link",
+    "description": "Create a one-time Stripe Checkout link for a pack of top-up citation checks and return its URL. Paid plans only. This charges nothing: the user must open the link and pay by card, and the checks are added when the payment completes. Get the pack keys and prices from citation_topups first.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "pack": {
+          "type": "string",
+          "description": "A pack `key` from citation_topups (e.g. \"500\").",
+          "examples": [
+            "500"
+          ]
+        }
+      },
+      "required": [
+        "pack"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "description": "Stripe Checkout link for the user to open and pay."
+        }
+      },
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Citation Top-up Checkout Link",
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "citation_auto_reload",
+    "title": "Citation Auto-reload Setting",
+    "description": "Read the auto-reload setting for AI citation checks and this month's reloads and charges. Read-only: auto-reload is off unless the account owner turns it on, and it can only be turned on or changed from the dashboard (signed in), never through the API or this server, because turning it on authorizes charges.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "annotations": {
+      "title": "Citation Auto-reload Setting",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  }
+]

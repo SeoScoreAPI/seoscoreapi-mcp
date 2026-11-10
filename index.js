@@ -22,13 +22,13 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { TOOLS, VERSION, configFromEnv, createDispatcher, fail } from "./lib.js";
+import { INSTRUCTIONS, TOOLS, VERSION, configFromEnv, createDispatcher, fail } from "./lib.js";
 
 const dispatch = createDispatcher(configFromEnv());
 
 const server = new Server(
-  { name: "seoscoreapi", version: VERSION },
-  { capabilities: { tools: {} } },
+  { name: "seoscoreapi", title: "SEO Score API", version: VERSION, websiteUrl: "https://seoscoreapi.com" },
+  { capabilities: { tools: {} }, instructions: INSTRUCTIONS },
 );
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }));

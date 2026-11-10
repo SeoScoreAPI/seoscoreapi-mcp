@@ -1,0 +1,22 @@
+# Smithery listing: https://smithery.ai/docs/config
+build:
+  dockerfile: Dockerfile
+  dockerBuildPath: .
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required:
+      - apiKey
+    properties:
+      apiKey:
+        type: string
+        description: SEO Score API key. Free at https://seoscoreapi.com, no card.
+  commandFunction: |-
+    (config) => ({
+      command: "node",
+      args: ["index.js"],
+      env: { SEO_SCORE_API_KEY: config.apiKey }
+    })
+  exampleConfig:
+    apiKey: ssa_your_key_here

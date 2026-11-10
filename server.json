@@ -1,18 +1,28 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.SeoScoreAPI/seoscoreapi-mcp",
-  "description": "SEO audits, AI readability, accessibility, backlinks and score monitoring from SEO Score API.",
+  "title": "SEO Score API",
+  "description": "SEO, GEO and ADA/WCAG audits, AI citation tracking and site crawls for AI assistants.",
   "repository": {
     "url": "https://github.com/SeoScoreAPI/seoscoreapi-mcp",
     "source": "github"
   },
-  "version": "1.4.2",
+  "version": "1.5.0",
   "websiteUrl": "https://seoscoreapi.com",
+  "icons": [
+    {
+      "src": "https://seoscoreapi.com/mcp-icon.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "512x512"
+      ]
+    }
+  ],
   "packages": [
     {
       "registryType": "npm",
       "identifier": "seoscoreapi-mcp",
-      "version": "1.4.2",
+      "version": "1.5.0",
       "transport": {
         "type": "stdio"
       },
@@ -21,6 +31,21 @@
           "name": "SEO_SCORE_API_KEY",
           "description": "SEO Score API key (free at https://seoscoreapi.com, no card)",
           "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://seoscoreapi.com/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Optional: 'Bearer <your SEO Score API key>'. Clients that support MCP OAuth can sign in instead. Free key at https://seoscoreapi.com/#signup (no card).",
+          "isRequired": false,
           "isSecret": true,
           "format": "string"
         }

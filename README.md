@@ -2,7 +2,19 @@
 
 Give Claude Desktop, Claude Code, Cursor, Windsurf, or any MCP-aware AI tool direct access to the [SEO Score API](https://seoscoreapi.com): full audits, backlink data, monitoring, and history.
 
-## Quick start
+## Hosted server (no install)
+
+Add `https://seoscoreapi.com/mcp` to any client that supports remote MCP servers
+(Streamable HTTP). Sign in when the client asks (ChatGPT, Claude and other clients that
+support MCP OAuth), or send your key as a header:
+
+```
+Authorization: Bearer ssa_your_key_here
+```
+
+Setup guides for each assistant: https://seoscoreapi.com/mcp-server
+
+## Local server (stdio)
 
 ```bash
 npx -y seoscoreapi-mcp
