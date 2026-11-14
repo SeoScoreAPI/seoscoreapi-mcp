@@ -1,6 +1,6 @@
 {
   "name": "seoscoreapi-mcp",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Model Context Protocol server for SEO Score API: SEO, GEO (AI search visibility) and ADA/WCAG accessibility audits, AI citation tracking, site crawls and monitoring for Claude, ChatGPT, Cursor, VS Code and any MCP client",
   "type": "module",
   "main": "index.js",

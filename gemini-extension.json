@@ -1,6 +1,6 @@
 {
   "name": "seoscoreapi",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "SEO, GEO (AI search visibility) and ADA/WCAG accessibility audits, AI citation tracking and site crawls from SEO Score API. Sign in on first use; free key, no card.",
   "mcpServers": {
     "seoscoreapi": {

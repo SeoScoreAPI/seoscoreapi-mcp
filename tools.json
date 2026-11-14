@@ -115,7 +115,7 @@
       "type": "object",
       "properties": {
         "tier": {
-          "description": "Plan key: free, starter, basic, pro or ultra."
+          "description": "Plan key: free, starter, basic, pro, ultra or scale."
         },
         "limits": {
           "description": "The plan's limits."

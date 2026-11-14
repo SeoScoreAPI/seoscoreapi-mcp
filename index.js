@@ -8,8 +8,9 @@
  * scoring happens server-side at https://seoscoreapi.com.
  *
  * Env:
- *   SEO_SCORE_API_KEY         your API key (paid tools return a 402 message if
- *                             the key's plan doesn't include them)
+ *   SEO_SCORE_API_KEY         your API key (paid tools return a 403 message naming
+ *                             the plan that includes them, with a one-click
+ *                             upgrade link, if the key's plan doesn't)
  *   SEO_SCORE_BASE_URL        API host (default https://seoscoreapi.com)
  *   SEO_SCORE_DEEP_AUDIT_URL  Deep Audit host (default: SEO_SCORE_BASE_URL).
  *                             SEO_SCORE_ENGINE_URL is still read as a fallback.

@@ -75,7 +75,7 @@ export SEO_SCORE_API_KEY="ssa_your_key_here"
 - **Turning auto-reload on.** The API has no such endpoint for API keys: it authorizes
   charges, so it is set from the dashboard only. `citation_auto_reload` reads it.
 - **Account actions** (`/signup`, `/verify`, `/upgrade`, `/rotate-key`) and the public
-  scoreboard opt-out.
+  scoreboard opt-in / opt-out (the scoreboard is opt-in; audits are private by default).
 
 ## Configuration
 

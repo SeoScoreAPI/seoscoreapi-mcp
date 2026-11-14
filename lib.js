@@ -5,7 +5,7 @@
 
 import { readFileSync } from "node:fs";
 
-export const VERSION = "1.5.0";
+export const VERSION = "1.5.1";
 export const DEFAULT_BASE = "https://seoscoreapi.com";
 
 // Main host: /deep-audit/usage (its /usage is the per-URL allowance).

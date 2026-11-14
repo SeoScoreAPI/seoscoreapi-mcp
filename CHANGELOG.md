@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.1 (2026-11-14)
+
+- `usage`: the plan key can now be `scale`, the new plan above Ultra (100,000 audits a
+  month).
+- Docs: a tool your plan doesn't include returns a 403 naming the plan that includes it,
+  with a one-click upgrade link; the public scoreboard is opt-in (audits are private by
+  default).
+
 ## 1.5.0 (2026-11-09)
 
 - Tool definitions moved to `tools.json`, which the hosted server at
